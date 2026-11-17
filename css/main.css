@@ -1,0 +1,728 @@
+#mjms-pdf-manager {
+  padding: 28px;
+  overflow: auto;
+  width: 100%;
+  color: var(--color-main-text);
+  background: var(--color-main-background);
+  box-sizing: border-box;
+}
+#mjms-pdf-manager * {
+  box-sizing: border-box;
+}
+.mjms-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+.mjms-heading h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 4px 0 8px;
+}
+.mjms-heading p {
+  color: var(--color-text-maxcontrast);
+}
+.mjms-eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+.mjms-badge {
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 8px 14px;
+  font-size: 12px;
+}
+.mjms-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--color-background-hover);
+  border-radius: 12px;
+}
+.mjms-spacer {
+  flex: 1;
+}
+#status {
+  min-height: 32px;
+  padding: 12px 2px;
+  color: var(--color-text-maxcontrast);
+}
+#status.error,
+#cloud-status.error {
+  color: var(--color-error);
+}
+.mjms-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+}
+.mjms-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.mjms-section-heading span {
+  font-size: 12px;
+  color: var(--color-text-maxcontrast);
+}
+#page-count {
+  background: var(--color-background-dark);
+  border-radius: 12px;
+  padding: 3px 8px;
+}
+#mjms-pdf-manager h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+#pages {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.mjms-card {
+  border: 2px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px;
+  background: var(--color-background-hover);
+  cursor: grab;
+}
+.mjms-card.selected {
+  border-color: var(--color-primary-element);
+}
+.mjms-card canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: white;
+  pointer-events: none;
+}
+.mjms-card .title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 8px 0 2px;
+  font-size: 12px;
+}
+.mjms-card .actions {
+  display: flex;
+  gap: 2px;
+  justify-content: space-between;
+}
+.mjms-card button {
+  padding: 3px 9px;
+  min-height: 32px;
+}
+#empty {
+  padding: 90px 30px;
+  text-align: center;
+  border: 2px dashed var(--color-border);
+  border-radius: 16px;
+}
+#empty strong {
+  font-size: 20px;
+}
+#empty p {
+  margin-top: 12px;
+  color: var(--color-text-maxcontrast);
+}
+.mjms-editor {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 18px;
+  align-self: start;
+}
+.mjms-editor label {
+  display: block;
+  margin-top: 12px;
+}
+.mjms-editor select,
+.mjms-editor textarea {
+  width: 100%;
+}
+.mjms-options {
+  display: flex;
+  gap: 14px;
+}
+.mjms-options input {
+  width: 85px;
+}
+.mjms-help {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 12px 0;
+  color: var(--color-text-maxcontrast);
+}
+#editor-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #e8e8ec;
+  border-radius: 6px;
+}
+#editor-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  cursor: crosshair;
+}
+#clear-annotations {
+  margin-top: 12px;
+}
+/* Author styles (including host resets) must not reveal closed native dialogs. */
+#mjms-pdf-manager dialog:not([open]) {
+  display: none !important;
+}
+#mjms-pdf-manager dialog[open] {
+  display: block;
+}
+#mjms-pdf-manager dialog {
+  color: var(--color-main-text);
+  background: var(--color-main-background);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 24px;
+  width: min(600px, 90vw);
+  max-height: 85vh;
+  margin: auto;
+}
+#mjms-pdf-manager dialog::backdrop {
+  background: #0008;
+}
+.mjms-close {
+  float: right;
+}
+#cloud-items {
+  max-height: 45vh;
+  overflow: auto;
+  margin: 16px 0;
+}
+.cloud-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+.cloud-row button {
+  text-align: left;
+  width: 100%;
+}
+#cloud-path {
+  overflow-wrap: anywhere;
+  margin: 12px 0;
+}
+#save-name-label input {
+  width: 100%;
+}
+#cloud-status {
+  margin: 12px 0;
+}
+#mjms-pdf-manager [hidden] {
+  display: none !important;
+}
+@media (max-width: 1000px) {
+  .mjms-workspace {
+    grid-template-columns: 1fr;
+  }
+  .mjms-editor {
+    max-width: 600px;
+  }
+  .mjms-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mjms-card {
+    transition: border-color 0.15s;
+  }
+}
+
+/* Expanded annotation workspace. */
+.mjms-workspace {
+  grid-template-columns: minmax(0, 1fr);
+}
+.mjms-annotation-launch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+.mjms-card .actions {
+  flex-wrap: wrap;
+}
+#mjms-pdf-manager #annotation-dialog {
+  width: min(1600px, 96vw);
+  height: 94vh;
+  max-height: 94vh;
+  padding: 20px;
+  overflow: hidden;
+}
+#mjms-pdf-manager #annotation-dialog[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+}
+.mjms-editor-header,
+.mjms-editor-navigation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mjms-editor-header {
+  justify-content: space-between;
+}
+.mjms-editor-header p {
+  margin: 0;
+  color: var(--color-text-maxcontrast);
+}
+.mjms-editor-navigation {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+}
+.mjms-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 16px;
+  min-height: 0;
+}
+#annotation-dialog .mjms-editor {
+  overflow: auto;
+  min-height: 0;
+  align-self: stretch;
+  padding: 12px;
+}
+#annotation-dialog #editor-wrap {
+  overflow: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px;
+  background: #d9dee5;
+  overscroll-behavior: contain;
+}
+#annotation-dialog #editor-canvas {
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+  box-shadow: 0 3px 18px #0002;
+  background: white;
+}
+#annotation-list {
+  padding-left: 24px;
+  margin: 12px 0;
+}
+#annotation-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+#annotation-list span {
+  display: block;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  margin-bottom: 6px;
+}
+#annotation-list button {
+  min-height: 32px;
+}
+#annotation-dialog h3 {
+  margin-top: 20px;
+  font-weight: 600;
+}
+#editor-status,
+#mail-status {
+  min-height: 20px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+#editor-status.error,
+#mail-status.error {
+  color: var(--color-error);
+}
+#mail-form label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+#mail-form input,
+#mail-form textarea {
+  width: 100%;
+}
+#mail-form p {
+  margin: 12px 0;
+}
+.mjms-mail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+@media (max-width: 850px) {
+  .mjms-editor-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  #annotation-dialog .mjms-editor {
+    grid-row: 1;
+    max-height: 23vh;
+    max-width: none;
+  }
+  #annotation-dialog #editor-wrap {
+    grid-row: 2;
+  }
+  #mjms-pdf-manager #annotation-dialog {
+    padding: 10px;
+    width: 98vw;
+    height: 96vh;
+    max-height: 96vh;
+  }
+  .mjms-editor-navigation {
+    gap: 5px;
+  }
+  .mjms-annotation-launch {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+
+/* Keep the document, rather than the introductory banner, in the foreground. */
+#mjms-pdf-manager {
+  padding: 12px 16px;
+}
+.mjms-heading {
+  margin: 0 0 8px;
+  gap: 12px;
+}
+.mjms-heading h1 {
+  font-size: 20px;
+  line-height: 28px;
+  margin: 0;
+}
+.mjms-local-note {
+  font-size: 12px;
+  color: var(--color-text-maxcontrast);
+}
+.mjms-toolbar {
+  gap: 6px;
+  padding: 8px;
+  border-radius: 8px;
+}
+#mjms-pdf-manager .mjms-toolbar button {
+  margin: 0;
+  min-height: 36px;
+  padding: 6px 12px;
+}
+#status {
+  min-height: 0;
+  line-height: 20px;
+  margin: 0;
+  padding: 6px 2px;
+  font-size: 13px;
+}
+#status:empty {
+  display: none;
+}
+.mjms-section-heading {
+  margin-bottom: 8px;
+}
+#mjms-pdf-manager .mjms-section-heading h2 {
+  font-size: 16px;
+  margin: 0;
+}
+@media (max-width: 1000px) {
+  .mjms-heading {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+@media (max-width: 600px) {
+  #mjms-pdf-manager {
+    padding: 8px;
+  }
+  .mjms-local-note {
+    display: none;
+  }
+  .mjms-toolbar .mjms-spacer {
+    display: none;
+  }
+  #mjms-pdf-manager .mjms-toolbar button {
+    padding: 6px 9px;
+  }
+}
+
+#annotation-dialog #editor-canvas {
+  touch-action: none;
+  user-select: none;
+}
+#annotation-dialog #editor-wrap {
+  background: var(--color-background-dark);
+}
+#annotation-dialog .mjms-options {
+  flex-wrap: wrap;
+}
+
+/* The editor controls use CSS pixels, so touch targets remain usable at any zoom/DPR. */
+#annotation-dialog #editor-stage {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+}
+#annotation-dialog #editor-canvas {
+  cursor: default;
+  margin: 0;
+}
+#annotation-dialog .mjms-direct-tools {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 16px;
+}
+#annotation-dialog .mjms-direct-tools button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  min-width: 0;
+  padding: 8px;
+  margin: 0;
+  color: var(--color-main-text);
+  background: var(--color-main-background);
+}
+#annotation-dialog .mjms-direct-tools svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+#annotation-dialog .mjms-direct-tools button[aria-pressed="true"] {
+  background: var(--color-primary-element);
+  color: var(--color-primary-element-text, white);
+}
+#annotation-dialog .mjms-direct-tools button:focus-visible {
+  outline: 2px solid var(--color-primary-element);
+  outline-offset: 2px;
+}
+#annotation-dialog #annotation-tool[hidden] {
+  display: none !important;
+}
+#annotation-dialog .mjms-editor-version {
+  font-size: 12px;
+  color: var(--color-text-maxcontrast);
+}
+#annotation-dialog #selection-overlay {
+  position: absolute;
+  border: 2px solid var(--color-primary-element, #0082c9);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 2;
+}
+/* Small visible handles keep a larger transparent mouse/touch target. */
+#annotation-dialog .mjms-resize-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  pointer-events: auto;
+  touch-action: none;
+  box-shadow: none;
+}
+#annotation-dialog .mjms-resize-handle::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1.5px solid var(--color-primary-element, #0082c9);
+  background: var(--color-main-background, white);
+  pointer-events: none;
+}
+#annotation-dialog .mjms-resize-handle:focus-visible {
+  outline: 2px solid var(--color-primary-element);
+  outline-offset: -2px;
+}
+#annotation-dialog [data-corner="nw"] {
+  left: -12px;
+  top: -12px;
+  cursor: nwse-resize;
+}
+#annotation-dialog [data-corner="ne"] {
+  right: -12px;
+  top: -12px;
+  cursor: nesw-resize;
+}
+#annotation-dialog [data-corner="sw"] {
+  left: -12px;
+  bottom: -12px;
+  cursor: nesw-resize;
+}
+#annotation-dialog [data-corner="se"] {
+  right: -12px;
+  bottom: -12px;
+  cursor: nwse-resize;
+}
+#annotation-dialog #selection-actions {
+  position: absolute;
+  display: flex;
+  gap: 4px;
+  z-index: 3;
+  white-space: nowrap;
+}
+#annotation-dialog #selection-actions button {
+  min-height: 40px;
+  margin: 0;
+  padding: 6px 10px;
+  background: var(--color-main-background);
+}
+#annotation-dialog #inline-text-editor {
+  position: absolute;
+  z-index: 4;
+  padding: 6px;
+  border: 2px solid var(--color-primary-element);
+  border-radius: 8px;
+  background: var(--color-main-background);
+  box-shadow: 0 2px 12px #0003;
+}
+#annotation-dialog #inline-text {
+  display: block;
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  font-family: Helvetica, Arial, sans-serif;
+  line-height: 1.2;
+  background: white;
+}
+#annotation-dialog .mjms-inline-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+#annotation-dialog #selection-overlay[hidden],
+#annotation-dialog #selection-actions[hidden],
+#annotation-dialog #inline-text-editor[hidden] {
+  display: none !important;
+}
+@media (pointer: coarse) {
+  #annotation-dialog .mjms-resize-handle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  #annotation-dialog [data-corner="nw"],
+  #annotation-dialog [data-corner="sw"] {
+    left: -16px;
+  }
+  #annotation-dialog [data-corner="ne"],
+  #annotation-dialog [data-corner="se"] {
+    right: -16px;
+  }
+  #annotation-dialog [data-corner="nw"],
+  #annotation-dialog [data-corner="ne"] {
+    top: -16px;
+  }
+  #annotation-dialog [data-corner="sw"],
+  #annotation-dialog [data-corner="se"] {
+    bottom: -16px;
+  }
+}
+
+#annotation-dialog #selection-overlay {
+  scroll-margin: 56px;
+}
+
+/* Keep all editor heading controls on one line and give the saved height to the PDF. */
+#annotation-dialog .mjms-editor-header {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+  white-space: nowrap;
+}
+#annotation-dialog .mjms-editor-header h2 {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0;
+}
+#annotation-dialog #selection-label {
+  flex: 1 1 240px;
+  min-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  margin: 0;
+}
+#annotation-dialog .mjms-editor-navigation {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  gap: 6px;
+  border: 0;
+  padding: 0;
+}
+#annotation-dialog .mjms-header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 7px;
+  margin: 0;
+  color: var(--color-main-text);
+}
+#annotation-dialog .mjms-header-icon svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+#annotation-dialog #editor-zoom {
+  height: 36px;
+  min-height: 36px;
+  margin: 0;
+  max-width: 190px;
+  font-size: 13px;
+}
+#annotation-dialog #close-editor {
+  flex: 0 0 auto;
+  min-height: 36px;
+  margin: 0;
+  padding: 6px 12px;
+}
+#annotation-dialog #editor-status {
+  min-height: 0;
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 18px;
+}
+#annotation-dialog #editor-status:empty {
+  display: none;
+}
