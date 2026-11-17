@@ -1,6 +1,6 @@
 <?php
 // Isolated controller tests. Nextcloud transport and upload provenance are simulated.
-namespace OCP { interface IRequest {} interface IUserSession {} }
+namespace OCP { interface IL10N {} class TestL10N implements IL10N { public function t($text) { return $text; } }  interface IRequest {} interface IUserSession {} }
 namespace OCP\Mail { interface IMailer {} }
 namespace Psr\Log { interface LoggerInterface {} }
 namespace OCP\AppFramework {
@@ -42,7 +42,7 @@ namespace {
   $bytes="%PDF-1.7\nfixture\n%%EOF";file_put_contents($path,$bytes);
   $request=new TestRequest;$request->upload=['error'=>UPLOAD_ERR_OK,'tmp_name'=>$path];
   $session=new TestSession;$mailer=new TestMailer;$logger=new TestLogger;
-  $controller=new \OCA\MJMSPDFManager\Controller\MailController($request,$session,$mailer,$logger);
+  $controller=new \OCA\MJMSPDFManager\Controller\MailController($request,new \OCP\TestL10N,$session,$mailer,$logger);
   $response=$controller->send('reader@example.test','Votre PDF','Bonjour','Résultat.pdf');
   check($response->status===200&&$mailer->calls===1,'Successful send');
   check($mailer->message->attachment===['content'=>$bytes,'name'=>'Résultat.pdf','type'=>'application/pdf'],'Exact PDF attachment');

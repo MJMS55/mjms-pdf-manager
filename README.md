@@ -143,3 +143,9 @@ En-tête de l’éditeur sur une seule ligne : titre/version, page/fichier, flè
 ## Licence
 
 Copyright MJMS. Code distribué sous GNU AGPL version 3 ou ultérieure (AGPL-3.0-or-later). Voir LICENSE.
+
+## Langues / Languages
+
+L’interface suit la langue du compte Nextcloud : français (`fr`), anglais (`en`), allemand (`de`), espagnol (`es`), italien (`it`), néerlandais (`nl`), polonais (`pl`) et basque (`eu`). Les catalogues `l10n/*.json` et `l10n/*.js` couvrent l’interface, les aides, l’accessibilité, l’action du menu Fichiers et les messages des contrôleurs. Les descriptions de l’application sont également localisées dans `appinfo/info.xml`.
+
+The interface follows the Nextcloud account language. When updating translations, keep the JSON and JavaScript catalogs synchronized and preserve placeholders such as `{count}`, `{number}` and `{name}`. Run `npm test`, `npm run test:php` and `npm run build` after changes. PDF annotation text remains subject to the existing PDF font character restrictions.

@@ -1,6 +1,6 @@
 <?php
 // Storage doubles: never touches a real Nextcloud instance.
-namespace OCP { interface IRequest {} interface IUserSession {} }
+namespace OCP { interface IL10N {} class TestL10N implements IL10N { public function t($text) { return $text; } }  interface IRequest {} interface IUserSession {} }
 namespace OCP\Files { interface IRootFolder {} interface Folder {} interface File {} }
 namespace OCP\AppFramework { class Controller { public function __construct(protected string $appName,protected \OCP\IRequest $request){} } }
 namespace OCP\AppFramework\Http {
@@ -29,7 +29,7 @@ namespace {
  function verify($ok,$label){if(!$ok)throw new \RuntimeException($label);echo "OK: $label\n";}
  $tmp=tempnam(sys_get_temp_dir(),'mjms-save-');$bytes="%PDF-1.7\nnew content\n%%EOF";file_put_contents($tmp,$bytes);
  try {
-  $home=new Home;$controller=new \OCA\MJMSPDFManager\Controller\FileController(new Request($tmp),new Root($home),new Session);
+  $home=new Home;$controller=new \OCA\MJMSPDFManager\Controller\FileController(new Request($tmp),new \OCP\TestL10N,new Root($home),new Session);
   $r=$controller->save();verify($r->status===201&&$home->created===1&&$home->node->content===$bytes,'New file created normally');
   $file=$home->node;$file->content='original';
   $r=$controller->save();verify($r->status===409&&$r->data['code']==='file_exists'&&$file->writes===0,'Existing file requires confirmation and is unchanged');

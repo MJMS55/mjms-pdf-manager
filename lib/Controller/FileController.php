@@ -17,6 +17,7 @@ class FileController extends Controller
     private const MAX_BYTES = 52428800;
     public function __construct(
         IRequest $request,
+        private \OCP\IL10N $l10n,
         private IRootFolder $root,
         private IUserSession $session,
     ) {
@@ -26,7 +27,7 @@ class FileController extends Controller
     {
         $user = $this->session->getUser();
         if ($user === null) {
-            throw new \RuntimeException("Authentification requise.");
+            throw new \RuntimeException($this->l10n->t("Authentication required."));
         }
         return $this->root->getUserFolder($user->getUID());
     }
@@ -37,7 +38,7 @@ class FileController extends Controller
             str_contains($path, "\\") ||
             preg_match('~(^|/)\.\.?(/|$)~', $path)
         ) {
-            throw new \InvalidArgumentException("Chemin invalide.");
+            throw new \InvalidArgumentException($this->l10n->t("Invalid path."));
         }
         return trim($path, "/");
     }
@@ -47,7 +48,7 @@ class FileController extends Controller
         $path = $this->path($path);
         $node = $path === "" ? $home : $home->get($path);
         if (!($node instanceof Folder) || !$node->isReadable()) {
-            throw new \InvalidArgumentException("Dossier inaccessible.");
+            throw new \InvalidArgumentException($this->l10n->t("Folder inaccessible."));
         }
         return $node;
     }
@@ -96,7 +97,7 @@ class FileController extends Controller
             return new DataResponse(["message" => $e->getMessage()], 400);
         } catch (\Throwable $e) {
             return new DataResponse(
-                ["message" => "Impossible de lire ce dossier."],
+                ["message" => $this->l10n->t("Unable to read this folder.")],
                 403,
             );
         }
@@ -105,7 +106,7 @@ class FileController extends Controller
     {
         if ($fileId < 1) {
             throw new \InvalidArgumentException(
-                "Identifiant de fichier invalide.",
+                $this->l10n->t("Invalid file ID."),
             );
         }
         $home = $this->home();
@@ -120,7 +121,7 @@ class FileController extends Controller
                 return $node;
             }
         }
-        throw new \RuntimeException("PDF introuvable ou inaccessible.");
+        throw new \RuntimeException($this->l10n->t("PDF not found or inaccessible."));
     }
     #[NoAdminRequired]
     public function source(int $fileId = 0): DataResponse
@@ -129,7 +130,7 @@ class FileController extends Controller
             $file = $this->fileById($fileId);
             if ($file->getSize() > self::MAX_BYTES) {
                 return new DataResponse(
-                    ["message" => "PDF trop volumineux (50 Mio maximum)."],
+                    ["message" => $this->l10n->t("PDF too large (50 MiB maximum).")],
                     413,
                 );
             }
@@ -142,7 +143,7 @@ class FileController extends Controller
             return new DataResponse(
                 [
                     "message" =>
-                        "Ce PDF est introuvable ou vous ne pouvez pas le lire.",
+                        $this->l10n->t("This PDF was not found or you cannot read it."),
                 ],
                 404,
             );
@@ -165,20 +166,20 @@ class FileController extends Controller
                     "pdf"
             ) {
                 return new DataResponse(
-                    ["message" => "PDF inaccessible."],
+                    ["message" => $this->l10n->t("PDF inaccessible.")],
                     403,
                 );
             }
             if ($file->getSize() > self::MAX_BYTES) {
                 return new DataResponse(
-                    ["message" => "PDF trop volumineux (50 Mio maximum)."],
+                    ["message" => $this->l10n->t("PDF too large (50 MiB maximum).")],
                     413,
                 );
             }
             $content = $file->getContent();
             if (!str_starts_with($content, "%PDF-")) {
                 return new DataResponse(
-                    ["message" => "Ce fichier ne contient pas un PDF valide."],
+                    ["message" => $this->l10n->t("This file does not contain a valid PDF.")],
                     422,
                 );
             }
@@ -191,7 +192,7 @@ class FileController extends Controller
             return $response;
         } catch (\Throwable $e) {
             return new DataResponse(
-                ["message" => "Impossible de lire ce PDF."],
+                ["message" => $this->l10n->t("Unable to read this PDF.")],
                 403,
             );
         }
@@ -214,7 +215,7 @@ class FileController extends Controller
                 return new DataResponse(
                     [
                         "message" =>
-                            "Choisissez un nom de fichier valide terminé par .pdf.",
+                            $this->l10n->t("Choose a valid filename ending in .pdf."),
                     ],
                     400,
                 );
@@ -227,7 +228,7 @@ class FileController extends Controller
                     return new DataResponse(
                         [
                             "message" =>
-                                "Ce nom est utilisé par un dossier. Choisissez un autre nom.",
+                                $this->l10n->t("This name is used by a folder. Choose another name."),
                         ],
                         409,
                     );
@@ -236,7 +237,7 @@ class FileController extends Controller
                     return new DataResponse(
                         [
                             "message" =>
-                                "Vous ne disposez pas du droit de modifier ce fichier.",
+                                $this->l10n->t("You do not have permission to edit this file."),
                         ],
                         403,
                     );
@@ -253,8 +254,8 @@ class FileController extends Controller
                                 ? "file_changed"
                                 : "file_exists",
                             "message" => $overwrite
-                                ? "Le fichier a changé depuis votre confirmation. Voulez-vous remplacer sa version actuelle ?"
-                                : "Ce fichier existe déjà. Voulez-vous le remplacer ?",
+                                ? $this->l10n->t("The file has changed since your confirmation. Replace its current version?")
+                                : $this->l10n->t("This file already exists. Replace it?"),
                             "etag" => $existing->getEtag(),
                             "id" => $existing->getId(),
                         ],
@@ -265,7 +266,7 @@ class FileController extends Controller
                 return new DataResponse(
                     [
                         "message" =>
-                            "Le fichier à remplacer a été déplacé ou supprimé. Relancez l’enregistrement.",
+                            $this->l10n->t("The file to replace was moved or deleted. Start saving again."),
                     ],
                     409,
                 );
@@ -273,7 +274,7 @@ class FileController extends Controller
                 return new DataResponse(
                     [
                         "message" =>
-                            "Vous ne pouvez pas créer de fichier dans ce dossier.",
+                            $this->l10n->t("You cannot create files in this folder."),
                     ],
                     403,
                 );
@@ -283,7 +284,7 @@ class FileController extends Controller
                 return new DataResponse(
                     [
                         "message" =>
-                            "Envoi incomplet. Vérifiez les limites de téléversement du serveur.",
+                            $this->l10n->t("Upload incomplete. Check the server upload limits."),
                     ],
                     400,
                 );
@@ -293,7 +294,7 @@ class FileController extends Controller
                 return new DataResponse(
                     [
                         "message" =>
-                            "Le PDF doit faire entre 8 octets et 50 Mio.",
+                            $this->l10n->t("The PDF must be between 8 bytes and 50 MiB."),
                     ],
                     413,
                 );
@@ -305,7 +306,7 @@ class FileController extends Controller
                 !str_contains(substr($content, -2048), "%%EOF")
             ) {
                 return new DataResponse(
-                    ["message" => "PDF invalide ou incomplet."],
+                    ["message" => $this->l10n->t("Invalid or incomplete PDF.")],
                     422,
                 );
             }
@@ -330,7 +331,7 @@ class FileController extends Controller
             return new DataResponse(
                 [
                     "message" =>
-                        "Enregistrement impossible. Vérifiez les droits, le quota et la disponibilité du stockage.",
+                        $this->l10n->t("Could not save. Check permissions, quota and storage availability."),
                 ],
                 403,
             );

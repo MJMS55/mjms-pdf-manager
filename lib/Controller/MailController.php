@@ -17,6 +17,7 @@ class MailController extends Controller
     private const MAX_ATTACHMENT_BYTES = 10485760;
     public function __construct(
         IRequest $request,
+        private \OCP\IL10N $l10n,
         private IUserSession $session,
         private IMailer $mailer,
         private LoggerInterface $logger,
@@ -35,7 +36,7 @@ class MailController extends Controller
         $user = $this->session->getUser();
         if ($user === null) {
             return new DataResponse(
-                ["message" => "Authentification requise."],
+                ["message" => $this->l10n->t("Authentication required.")],
                 401,
             );
         }
@@ -47,7 +48,7 @@ class MailController extends Controller
             preg_match('/[\r\n]/', $to)
         ) {
             return new DataResponse(
-                ["message" => "Saisissez une seule adresse mail valide."],
+                ["message" => $this->l10n->t("Enter one valid email address.")],
                 400,
             );
         }
@@ -58,7 +59,7 @@ class MailController extends Controller
             strlen($body) > 40000
         ) {
             return new DataResponse(
-                ["message" => "Objet ou message invalide ou trop long."],
+                ["message" => $this->l10n->t("Subject or message invalid or too long.")],
                 400,
             );
         }
@@ -71,7 +72,7 @@ class MailController extends Controller
             return new DataResponse(
                 [
                     "message" =>
-                        "Nom de pièce jointe invalide : utilisez un nom terminé par .pdf.",
+                        $this->l10n->t("Invalid attachment name: use a name ending in .pdf."),
                 ],
                 400,
             );
@@ -83,7 +84,7 @@ class MailController extends Controller
             !is_uploaded_file($upload["tmp_name"])
         ) {
             return new DataResponse(
-                ["message" => "Pièce jointe absente ou envoi incomplet."],
+                ["message" => $this->l10n->t("Attachment missing or upload incomplete.")],
                 400,
             );
         }
@@ -96,7 +97,7 @@ class MailController extends Controller
             return new DataResponse(
                 [
                     "message" =>
-                        "La pièce jointe doit être un PDF de 10 Mio maximum.",
+                        $this->l10n->t("The attachment must be a PDF of at most 10 MiB."),
                 ],
                 413,
             );
@@ -110,7 +111,7 @@ class MailController extends Controller
             return new DataResponse(
                 [
                     "message" =>
-                        "La pièce jointe PDF est invalide ou incomplète.",
+                        $this->l10n->t("The PDF attachment is invalid or incomplete."),
                 ],
                 422,
             );
@@ -137,14 +138,14 @@ class MailController extends Controller
                 return new DataResponse(
                     [
                         "message" =>
-                            "Le serveur de messagerie a refusé le destinataire. Vérifiez son adresse et la configuration SMTP.",
+                            $this->l10n->t("The mail server rejected the recipient. Check the address and SMTP configuration."),
                     ],
                     502,
                 );
             }
             return new DataResponse([
                 "message" =>
-                    "Le PDF a été remis au serveur de messagerie pour envoi à " .
+                    $this->l10n->t("The PDF was handed to the mail server for delivery to ") .
                     $to .
                     ".",
             ]);
@@ -156,7 +157,7 @@ class MailController extends Controller
             return new DataResponse(
                 [
                     "message" =>
-                        "Envoi non confirmé. Vérifiez la configuration SMTP et les journaux Nextcloud avant de réessayer pour éviter un doublon.",
+                        $this->l10n->t("Sending unconfirmed. Check SMTP configuration and Nextcloud logs before retrying to avoid duplicates."),
                 ],
                 502,
             );

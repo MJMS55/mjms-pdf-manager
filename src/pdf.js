@@ -1,3 +1,4 @@
+import { t } from "./l10n.js";
 import { widthOf, alphaOf } from "./annotations.js";
 import {
   PDFDocument,
@@ -22,7 +23,7 @@ export function colorRgb(hex) {
   return rgb(...[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255));
 }
 export async function exportPdf(pages) {
-  if (!pages.length) throw new Error("Ajoutez au moins une page.");
+  if (!pages.length) throw new Error(t("Add at least one page."));
   const output = await PDFDocument.create();
   const font = await output.embedFont(StandardFonts.Helvetica);
   const clean = await PDFDocument.create();
@@ -134,7 +135,7 @@ export async function exportPdf(pages) {
   output.setProducer("MJMS-PDF-Manager");
   const bytes = await output.save();
   if (bytes.length > MAX_BYTES)
-    throw new Error("Le résultat dépasse la limite de 50 Mio.");
+    throw new Error(t("The result exceeds the 50 MiB limit."));
   return bytes;
 }
 
@@ -147,10 +148,10 @@ export async function restoreEditing(doc) {
   const model = doc.catalog.lookup(PDFName.of("MJMSEditing"));
   if (!base && !model) return null;
   if (!(base instanceof PDFRawStream) || !(model instanceof PDFRawStream))
-    throw new Error("Données MJMS invalides.");
+    throw new Error(t("Invalid MJMS data."));
   const data = decodePDFRawStream(model).decode();
   if (data.length > MAX_BYTES)
-    throw new Error("Annotations MJMS trop volumineuses.");
+    throw new Error(t("MJMS annotations are too large."));
   const state = JSON.parse(new TextDecoder().decode(data));
   const bytes = decodePDFRawStream(base).decode();
   if (
@@ -159,17 +160,17 @@ export async function restoreEditing(doc) {
     !Array.isArray(state.pages) ||
     state.pages.length !== doc.getPageCount()
   )
-    throw new Error("Version ou pages MJMS invalides.");
+    throw new Error(t("Invalid MJMS version or pages."));
   const clean = await PDFDocument.load(bytes);
   if (clean.getPageCount() !== state.pages.length)
-    throw new Error("Pages MJMS incohérentes.");
+    throw new Error(t("Inconsistent MJMS pages."));
   const point = (p) =>
     Array.isArray(p) &&
     p.length === 2 &&
     p.every((n) => Number.isFinite(n) && Math.abs(n) < 1e7);
   for (const annotations of state.pages) {
     if (!Array.isArray(annotations) || annotations.length > 10000)
-      throw new Error("Annotations MJMS invalides.");
+      throw new Error(t("Invalid MJMS annotations."));
     for (const a of annotations) {
       if (
         !a ||
@@ -187,17 +188,17 @@ export async function restoreEditing(doc) {
         a.size < 8 ||
         a.size > 96
       )
-        throw new Error("Annotation MJMS invalide.");
+        throw new Error(t("Invalid MJMS annotation."));
       if (
         a.width !== undefined &&
         (!Number.isFinite(a.width) || a.width < 0.5 || a.width > 20)
       )
-        throw new Error("Épaisseur MJMS invalide.");
+        throw new Error(t("Invalid MJMS stroke width."));
       if (
         a.opacity !== undefined &&
         (!Number.isFinite(a.opacity) || a.opacity < 0.05 || a.opacity > 1)
       )
-        throw new Error("Opacité MJMS invalide.");
+        throw new Error(t("Invalid MJMS opacity."));
       if (
         a.type === "text"
           ? !point(a.point) || typeof a.text !== "string" || a.text.length > 500
@@ -207,14 +208,14 @@ export async function restoreEditing(doc) {
               !a.points.every(point)
             : !point(a.start) || !point(a.end)
       )
-        throw new Error("Géométrie MJMS invalide.");
+        throw new Error(t("Invalid MJMS geometry."));
       if (
         a.pressures !== undefined &&
         (!Array.isArray(a.pressures) ||
           a.pressures.length !== a.points?.length ||
           !a.pressures.every((n) => Number.isFinite(n) && n >= 0.1 && n <= 1))
       )
-        throw new Error("Pression MJMS invalide.");
+        throw new Error(t("Invalid MJMS pressure."));
     }
   }
   return { bytes, annotations: state.pages };

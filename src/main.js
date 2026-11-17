@@ -1,3 +1,4 @@
+import { t } from "./l10n.js";
 import {
   drawAnnotations,
   bounds,
@@ -131,7 +132,7 @@ const boot = () => {
     try {
       await fn();
     } catch (e) {
-      status(e.message || "Une erreur est survenue.", true);
+      status(e.message || t("An error occurred."), true);
       if ($("cloud-dialog").open) {
         $("cloud-status").textContent = e.message;
         $("cloud-status").className = "error";
@@ -155,7 +156,7 @@ const boot = () => {
       },
     );
     if (!response.ok) {
-      let message = "Le serveur a refusé la requête (" + response.status + ").";
+      let message = t("The server rejected the request (") + response.status + ").";
       let data = {};
       try {
         data = await response.json();
@@ -177,22 +178,22 @@ const boot = () => {
       for (const file of files) {
         if (file.size > MAX_BYTES || bytesTotal + file.size > MAX_BYTES)
           throw new Error(
-            "Limite de 50 Mio pour l’ensemble des imports. Videz l’atelier pour libérer les fichiers précédents.",
+            t("50 MiB limit for all imports. Clear the workspace to release previous files."),
           );
         let bytes = new Uint8Array(await file.arrayBuffer());
         if (new TextDecoder().decode(bytes.slice(0, 5)) !== "%PDF-")
-          throw new Error(file.name + " : ce fichier n’est pas un PDF.");
+          throw new Error(file.name + t(" : this file is not a PDF."));
         let doc;
         try {
           doc = await PDFDocument.load(bytes);
         } catch {
           throw new Error(
             file.name +
-              " : PDF chiffré ou illisible. Déverrouillez-le avant import.",
+              t(" : encrypted or unreadable PDF. Unlock it before importing."),
           );
         }
         if (doc.isEncrypted)
-          throw new Error(file.name + " : PDF chiffré non pris en charge.");
+          throw new Error(file.name + t(" : encrypted PDFs are not supported."));
         const restored = await restoreEditing(doc);
         if (restored) {
           bytes = restored.bytes;
@@ -200,7 +201,7 @@ const boot = () => {
         }
         count += doc.getPageCount();
         if (count > MAX_PAGES)
-          throw new Error("Limite de 300 pages par document.");
+          throw new Error(t("Limit of 300 pages per document."));
         const loading = pdfjs.getDocument({
           data: bytes.slice(),
           isEvalSupported: false,
@@ -238,7 +239,7 @@ const boot = () => {
     selected ||= pages[0]?.id;
     await render();
     status(
-      `${added.length} page(s) ajoutée(s). L’export fusionnera les pages dans cet ordre.`,
+      t("{count} page(s) added. Export will merge the pages in this order.", { count: added.length }),
     );
   }
   async function thumbnail(item, canvas) {
@@ -273,7 +274,7 @@ const boot = () => {
       card.draggable = true;
       card.dataset.id = item.id;
       card.tabIndex = 0;
-      card.setAttribute("aria-label", `Page ${index + 1}, ${item.source.name}`);
+      card.setAttribute("aria-label", t("Page {number}, {name}", {number: index + 1, name: item.source.name}));
       const canvas = document.createElement("canvas");
       card.append(canvas);
       const title = document.createElement("span");
@@ -288,15 +289,15 @@ const boot = () => {
         pages = movePage(pages, index, index + delta);
         await render();
       };
-      const left = button("←", "Déplacer la page avant", () => move(-1));
+      const left = button("←", t("Move page earlier"), () => move(-1));
       left.disabled = index === 0;
-      const right = button("→", "Déplacer la page après", () => move(1));
+      const right = button("→", t("Move page later"), () => move(1));
       right.disabled = index === pages.length - 1;
       actions.append(
-        button("Annoter", "Annoter cette page", () => openEditor(item.id)),
+        button(t("Annotate"), t("Annotate this page"), () => openEditor(item.id)),
         left,
         right,
-        button("×", "Supprimer cette page", async () => {
+        button("×", t("Delete this page"), async () => {
           snapshot();
           pages = pages.filter((p) => p.id !== item.id);
           if (selected === item.id) selected = pages[0]?.id;
@@ -358,11 +359,11 @@ const boot = () => {
     if (!item) {
       canvas.width = 1;
       canvas.height = 1;
-      $("selection-label").textContent = "Sélectionnez une vignette.";
+      $("selection-label").textContent = t("Select a thumbnail.");
       return;
     }
     $("selection-label").textContent =
-      `Page ${pages.indexOf(item) + 1} · ${item.source.name}`;
+      t("Page {number} · {name}", {number: pages.indexOf(item) + 1, name: item.source.name});
     const page = await item.source.view.getPage(item.index + 1),
       natural = page.getViewport({ scale: 1 });
     const v = page.getViewport({
@@ -547,7 +548,7 @@ const boot = () => {
     if (a?.type !== "text") return;
     annotationSelection = index;
     textEditing = { index, pageId: selected, draft: structuredClone(a) };
-    const b = bounds({ ...a, text: a.text || "Votre texte" }, viewport),
+    const b = bounds({ ...a, text: a.text || t("Your text") }, viewport),
       ratio = cssScale(),
       stage = $("editor-stage");
     const left = Math.max(0, Math.min(b[0] * ratio, stage.clientWidth - 220)),
@@ -568,7 +569,7 @@ const boot = () => {
     input.focus();
     input.select();
     status(
-      "Écrivez sur la page, puis validez. Ctrl+Entrée : valider ; Échap : annuler.",
+      t("Write on the page, then confirm. Ctrl+Enter: confirm; Esc: cancel."),
     );
   }
   function cancelTextEdit() {
@@ -581,7 +582,7 @@ const boot = () => {
     if (!textEditing) return;
     const edit = textEditing,
       text = $("inline-text").value.trim();
-    if (!text) throw new Error("Saisissez un texte, ou annulez.");
+    if (!text) throw new Error(t("Enter text, or cancel."));
     const font = await currentItem().source.doc.embedFont(
       StandardFonts.Helvetica,
     );
@@ -589,7 +590,7 @@ const boot = () => {
       font.encodeText(text.replace(/\n/g, ""));
     } catch {
       throw new Error(
-        "Utilisez des caractères latins (accents français acceptés).",
+        t("Use Latin characters (French accents are supported)."),
       );
     }
     if (edit.index === null || text !== edit.draft.text) {
@@ -606,7 +607,7 @@ const boot = () => {
     selectAnnotation(annotationSelection);
     await refreshAnnotations();
     status(
-      "Texte prêt : faites-le glisser ou tirez une poignée pour changer sa taille.",
+      t("Text ready: drag it or pull a handle to resize it."),
     );
   }
   $("inline-save").onclick = () => run(commitTextEdit);
@@ -820,7 +821,7 @@ const boot = () => {
       if (!a) return;
       const text = $("annotation-text").value.trim();
       if (a.type === "text") {
-        if (!text) throw new Error("Saisissez un texte.");
+        if (!text) throw new Error(t("Enter text."));
         const font = await currentItem().source.doc.embedFont(
           StandardFonts.Helvetica,
         );
@@ -847,7 +848,7 @@ const boot = () => {
       annotationSelection = null;
       dirty = true;
       await render();
-      status("Modification rétablie.");
+      status(t("Change redone."));
     });
   $("annotation-dialog").addEventListener("keydown", (e) => {
     if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || busy) return;
@@ -871,14 +872,14 @@ const boot = () => {
       return;
     }
     if (!Number.isFinite(size) || size < 8 || size > 96)
-      throw new Error("La taille doit être comprise entre 8 et 96.");
+      throw new Error(t("Size must be between 8 and 96."));
     const item = pages.find((p) => p.id === selected);
     const font = await item.source.doc.embedFont(StandardFonts.Helvetica);
     try {
       font.encodeText(text.replace(/\n/g, ""));
     } catch {
       throw new Error(
-        "Utilisez des caractères latins (les accents français sont acceptés).",
+        t("Use Latin characters (French accents are supported)."),
       );
     }
     snapshot();
@@ -895,7 +896,7 @@ const boot = () => {
     setTool("select");
     selectAnnotation(annotationSelection);
     status(
-      "Texte ajouté : glissez-le pour le déplacer ; tirez une poignée pour le redimensionner.",
+      t("Text added: drag to move it; pull a handle to resize it."),
     );
   }
   function renderAnnotationList(item) {
@@ -903,7 +904,7 @@ const boot = () => {
     list.replaceChildren();
     if (!item?.annotations.length) {
       const li = document.createElement("li");
-      li.textContent = "Aucune annotation ajoutée.";
+      li.textContent = t("No annotations added.");
       list.append(li);
       return;
     }
@@ -912,20 +913,20 @@ const boot = () => {
         label = document.createElement("span");
       label.textContent =
         a.type === "text"
-          ? "Texte : " + a.text
+          ? t("Text: ") + a.text
           : a.type === "pen"
-            ? "Dessin libre"
+            ? t("Freehand drawing")
             : {
-                highlight: "Surlignage",
-                rectangle: "Rectangle",
-                circle: "Ellipse",
-                line: "Ligne",
-                arrow: "Flèche",
+                highlight: t("Highlight"),
+                rectangle: t("Rectangle"),
+                circle: t("Ellipse"),
+                line: t("Line"),
+                arrow: t("Arrow"),
               }[a.type] || a.type;
       li.append(
         button(
-          "Sélectionner",
-          "Sélectionner l’annotation " + (index + 1),
+          t("Select"),
+          t("Select annotation ") + (index + 1),
           async () => {
             setTool("select");
             selectAnnotation(index, true);
@@ -933,14 +934,14 @@ const boot = () => {
         ),
         label,
         button(
-          "Supprimer",
-          "Supprimer l’annotation " + (index + 1),
+          t("Delete"),
+          t("Delete annotation ") + (index + 1),
           async () => {
             snapshot();
             item.annotations = removeAnnotation(item.annotations, index);
             annotationSelection = null;
             await refreshAnnotations();
-            status("Annotation supprimée. Vous pouvez annuler cette action.");
+            status(t("Annotation deleted. You can undo this action."));
           },
         ),
       );
@@ -1011,7 +1012,7 @@ const boot = () => {
     $("mail-status").textContent = "";
     $("mail-status").className = "";
     $("mail-attachment").textContent =
-      pages.length + " page(s) dans le PDF joint.";
+      t("{count} page(s) in the attached PDF.", { count: pages.length });
     $("mail-dialog").showModal();
   };
   $("mail-cancel").onclick = () => $("mail-dialog").close();
@@ -1025,14 +1026,14 @@ const boot = () => {
       const name = $("mail-name").value.trim();
       if (!/^.+\.pdf$/i.test(name) || /[\\/:*?"<>|\x00-\x1f]/.test(name))
         throw new Error(
-          "Choisissez un nom de pièce jointe valide terminé par .pdf.",
+          t("Choose a valid attachment name ending in .pdf."),
         );
       $("mail-status").className = "";
-      $("mail-status").textContent = "Préparation du PDF et envoi…";
+      $("mail-status").textContent = t("Preparing PDF and sending…");
       const bytes = await exportPdf(pages);
       if (bytes.length > 10 * 1024 * 1024)
         throw new Error(
-          "La pièce jointe dépasse 10 Mio. Exportez le PDF et utilisez un partage Nextcloud.",
+          t("The attachment exceeds 10 MiB. Export the PDF and use a Nextcloud share."),
         );
       const data = new FormData();
       for (const [key, id] of [
@@ -1074,11 +1075,11 @@ const boot = () => {
       if (!pages.some((p) => p.id === selected)) selected = pages[0]?.id;
       dirty = true;
       await render();
-      status("Dernière modification annulée.");
+      status(t("Last change undone."));
     });
   $("reset").onclick = () =>
     run(async () => {
-      if (!confirm("Vider l’atelier et abandonner les modifications ?")) return;
+      if (!confirm(t("Clear the workspace and discard changes?"))) return;
       pages = [];
       history = [];
       future = [];
@@ -1088,7 +1089,7 @@ const boot = () => {
       sources = [];
       dirty = false;
       await render();
-      status("Atelier vidé.");
+      status(t("Workspace cleared."));
     });
   $("download").onclick = () =>
     run(async () => {
@@ -1101,7 +1102,7 @@ const boot = () => {
       a.download = "Document.pdf";
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 60000);
-      status("PDF exporté.");
+      status(t("PDF exported."));
     });
   async function browse(path) {
     const result = await (
@@ -1118,7 +1119,7 @@ const boot = () => {
       const row = document.createElement("label");
       row.className = "cloud-row";
       if (node.folder) {
-        const b = button("▸ " + node.name, "Ouvrir " + node.name, () =>
+        const b = button("▸ " + node.name, t("Open ") + node.name, () =>
           browse(node.path),
         );
         row.append(b);
@@ -1135,18 +1136,18 @@ const boot = () => {
     if (!$("cloud-items").childElementCount)
       $("cloud-items").textContent =
         cloudMode === "save"
-          ? "Aucun sous-dossier."
-          : "Aucun PDF ni sous-dossier.";
+          ? t("No subfolders.")
+          : t("No PDFs or subfolders.");
     controls();
   }
   function openCloud(mode) {
     return run(async () => {
       cloudMode = mode;
       $("cloud-title").textContent =
-        mode === "save" ? "Enregistrer le PDF" : "Choisir des PDF";
+        mode === "save" ? t("Save PDF") : t("Choose PDFs");
       $("save-name-label").hidden = mode !== "save";
       $("cloud-confirm").textContent =
-        mode === "save" ? "Enregistrer ici" : "Importer la sélection";
+        mode === "save" ? t("Save here") : t("Import selection");
       await browse(mode === "save" ? preferredSaveFolder : "/");
       $("cloud-dialog").showModal();
     });
@@ -1192,8 +1193,8 @@ const boot = () => {
         ) {
           $("cloud-status").className = "";
           $("cloud-status").textContent =
-            "Remplacement annulé. Vous pouvez choisir un autre nom.";
-          status("Enregistrement annulé : le fichier existant est conservé.");
+            t("Replacement cancelled. You can choose another name.");
+          status(t("Save cancelled: the existing file has been kept."));
           return null;
         }
         form.set("overwrite", "true");
@@ -1206,13 +1207,13 @@ const boot = () => {
     run(async () => {
       if (cloudMode === "import") {
         const checks = [...$("cloud-items").querySelectorAll("input:checked")];
-        if (!checks.length) throw new Error("Sélectionnez au moins un PDF.");
+        if (!checks.length) throw new Error(t("Select at least one PDF."));
         if (
           checks.reduce((n, c) => n + Number(c.dataset.size), 0) +
             sources.reduce((n, s) => n + s.bytes, 0) >
           MAX_BYTES
         )
-          throw new Error("La sélection dépasse la limite de 50 Mio.");
+          throw new Error(t("The selection exceeds the 50 MiB limit."));
         const files = [];
         for (const check of checks) {
           const blob = await (
@@ -1225,7 +1226,7 @@ const boot = () => {
         await addFiles(files);
         $("cloud-dialog").close();
       } else {
-        status("Création et enregistrement du PDF…");
+        status(t("Creating and saving PDF…"));
         const bytes = await exportPdf(pages),
           form = new FormData();
         form.append("folder", cloudPath);
@@ -1242,8 +1243,8 @@ const boot = () => {
         $("cloud-dialog").close();
         status(
           (result.overwritten
-            ? "PDF remplacé dans Nextcloud : "
-            : "PDF enregistré dans Nextcloud : ") + result.path,
+            ? t("PDF replaced in Nextcloud: ")
+            : t("PDF saved in Nextcloud: ")) + result.path,
         );
       }
     });
@@ -1263,8 +1264,8 @@ const boot = () => {
         !/^[1-9]\d*$/.test(incomingFileId) ||
         !Number.isSafeInteger(Number(incomingFileId))
       )
-        throw new Error("Identifiant de PDF invalide.");
-      status("Ouverture du PDF depuis Nextcloud…");
+        throw new Error(t("Invalid PDF ID."));
+      status(t("Opening PDF from Nextcloud…"));
       const query = "?fileId=" + encodeURIComponent(incomingFileId);
       const source = await (await request("/api/source" + query)).json();
       const blob = await (await request("/api/pdf" + query)).blob();
@@ -1276,9 +1277,9 @@ const boot = () => {
       preferredSaveFolder =
         source.path.slice(0, source.path.lastIndexOf("/")) || "/";
       status(
-        "PDF ouvert : " +
+        t("PDF opened: ") +
           source.name +
-          ". Vous pouvez organiser et annoter ses pages.",
+          t(". You can organize and annotate its pages."),
       );
     });
 };

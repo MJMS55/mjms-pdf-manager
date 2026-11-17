@@ -21,8 +21,15 @@ http
       const url = new URL(req.url, "http://localhost");
       if (url.pathname === "/") {
         let html = (await readFile("templates/main.php", "utf8")).replace(
-          /<\?php[\s\S]*?\?>/,
-          "",
+          /<\?php[\s\S]*?\?>/g,
+          (code) => {
+            const doubleQuoted = code.match(/p\(\$l->t\(("(?:[^"\\]|\\.)*")\)\);/);
+            if (doubleQuoted) return JSON.parse(doubleQuoted[1]).replace(/[&<>"']/g, (c) => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"})[c]);
+            const match = code.match(/p\(\$l->t\('([\s\S]*)'\)\);/);
+            if (!match) return "";
+            const text = match[1].replace(/\\'/g, "'").replace(/\\\\/g, "\\");
+            return text.replace(/[&<>"']/g, (c) => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"})[c]);
+          },
         );
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.end(
