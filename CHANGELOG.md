@@ -1,3 +1,7 @@
+# 0.4.5 — 2026-11-25
+
+- Point the App Store homepage and description links to https://mjms.fr/applications.
+
 # 0.4.4 — 2026-11-25
 
 - Add the two existing screenshots hosted on mjms.fr to the App Store listing.
