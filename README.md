@@ -1,6 +1,6 @@
 # MJMS-PDF-Manager
 
-Version 0.4.3 candidate. Application native d’identifiant **mjms_pdf_manager**, namespace **OCA\MJMSPDFManager**. Cible déclarée : Nextcloud 34 à 36. La compatibilité effective avec Nextcloud 35 et 36 reste à valider sur des instances réelles avant publication. Le dossier installé doit s’appeler `mjms_pdf_manager`.
+Version 0.4.4. Application native d’identifiant **mjms_pdf_manager**, namespace **OCA\MJMSPDFManager**. Cible déclarée : Nextcloud 34 à 36. La compatibilité effective avec Nextcloud 35 et 36 reste à valider sur des instances réelles avant publication. Le dossier installé doit s’appeler `mjms_pdf_manager`.
 
 ## Correctif 0.3.1
 
@@ -48,7 +48,7 @@ Le ZIP de livraison comprend un dossier `mjms_pdf_manager`, les sources et les r
 Sur le serveur Linux Nextcloud (adapter `/var/www/nextcloud` et l’utilisateur PHP) :
 
 ```sh
-unzip mjms_pdf_manager-0.4.3-candidate.zip -d /var/www/nextcloud/apps/
+unzip mjms_pdf_manager-0.4.4.zip -d /var/www/nextcloud/apps/
 chown -R www-data:www-data /var/www/nextcloud/apps/mjms_pdf_manager
 cd /var/www/nextcloud
 sudo -u www-data php occ app:enable mjms_pdf_manager
