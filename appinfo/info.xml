@@ -12,7 +12,7 @@
   <summary lang="eu">Bateratu, antolatu eta gehitu oharrak PDF dokumentuei</summary>
   <description><![CDATA[Merge, organize and annotate your PDF documents directly in Nextcloud.
 
-[Discover MJMS applications for Nextcloud](https://mjms.fr/applications).
+[Discover MJMS PDF Manager and screenshots](https://mjms.fr/applications/mjms-pdf-manager).
 
 ## Features
 
@@ -35,10 +35,10 @@ Manager does not provide OCR, editing of original document text or secure redact
 
 Free software under AGPL-3.0-or-later, developed by Michel Joris — MJMS, an independent developer. MJMS helps professionals with business application development, software modernization, and Linux and Nextcloud infrastructure.
 
-[Discover MJMS applications and services](https://mjms.fr/applications).]]></description>
+[Discover the application and contact MJMS](https://mjms.fr/applications/mjms-pdf-manager).]]></description>
   <description lang="fr"><![CDATA[Fusionnez, organisez et annotez vos PDF directement dans Nextcloud.
 
-[Découvrez les applications MJMS pour Nextcloud](https://mjms.fr/applications).
+[Découvrez MJMS PDF Manager et ses captures d’écran](https://mjms.fr/applications/mjms-pdf-manager).
 
 ## Fonctionnalités
 
@@ -61,19 +61,19 @@ Manager ne propose ni OCR, ni modification du texte original, ni caviardage séc
 
 Application libre sous AGPL-3.0-or-later, développée par Michel Joris — MJMS, développeur indépendant. MJMS accompagne les professionnels dans le développement d’applications métiers, la modernisation de logiciels et les infrastructures Linux et Nextcloud.
 
-[Découvrir les applications et les services MJMS](https://mjms.fr/applications).]]></description>
+[Découvrir l’application et contacter MJMS](https://mjms.fr/applications/mjms-pdf-manager).]]></description>
   <description lang="de">Führen Sie PDF-Dokumente zusammen, ordnen oder entfernen Sie Seiten und fügen Sie Text, Hervorhebungen und Zeichnungen hinzu. Die PDF-Verarbeitung erfolgt in Ihrem Browser. Laden Sie das Ergebnis herunter oder speichern Sie es in Ihren Nextcloud-Dateien. Der optionale E-Mail-Versand verwendet die Mailkonfiguration Ihres Nextcloud-Servers.</description>
   <description lang="es">Fusione documentos PDF, reordene o elimine páginas y añada texto, resaltados y dibujos. El procesamiento de PDF se realiza en su navegador. Descargue el resultado o guárdelo en sus archivos de Nextcloud. El envío opcional por correo utiliza la configuración de correo del servidor Nextcloud.</description>
   <description lang="it">Unisci documenti PDF, riordina o elimina pagine e aggiungi testo, evidenziazioni e disegni. L’elaborazione dei PDF avviene nel browser. Scarica il risultato o salvalo nei tuoi file Nextcloud. L’invio facoltativo per email utilizza la configurazione di posta del server Nextcloud.</description>
   <description lang="nl">Voeg PDF-documenten samen, wijzig de paginavolgorde of verwijder pagina’s en voeg tekst, markeringen en tekeningen toe. PDF-verwerking vindt plaats in uw browser. Download het resultaat of sla het op in uw Nextcloud-bestanden. Verzending per e-mail gebruikt de mailconfiguratie van uw Nextcloud-server.</description>
   <description lang="pl">Łącz dokumenty PDF, zmieniaj kolejność stron lub je usuwaj oraz dodawaj tekst, wyróżnienia i rysunki. Przetwarzanie PDF odbywa się w przeglądarce. Pobierz wynik lub zapisz go w plikach Nextcloud. Opcjonalna wysyłka e-mailem korzysta z konfiguracji poczty serwera Nextcloud.</description>
   <description lang="eu">Bateratu PDF dokumentuak, berrantolatu edo ezabatu orriak, eta gehitu testua, nabarmendurak eta marrazkiak. PDFak zure nabigatzailean prozesatzen dira. Deskargatu emaitza edo gorde zure Nextcloud fitxategietan. Posta elektronikoz bidaltzeko aukerak Nextcloud zerbitzariaren posta-konfigurazioa erabiltzen du.</description>
-  <version>0.4.5</version>
+  <version>0.4.6</version>
   <licence>AGPL-3.0-or-later</licence>
   <author mail="contact@mjms.fr" homepage="https://mjms.fr">Michel JORIS — MJMS</author>
   <namespace>MJMSPDFManager</namespace>
   <category>office</category>
-  <website>https://mjms.fr/applications</website>
+  <website>https://mjms.fr/applications/mjms-pdf-manager</website>
   <bugs>https://github.com/MJMS55/mjms-pdf-manager/issues</bugs>
   <repository type="git">https://github.com/MJMS55/mjms-pdf-manager.git</repository>
   <screenshot>https://mjms.fr/images/mjms-pdf-manager-1920.webp</screenshot>

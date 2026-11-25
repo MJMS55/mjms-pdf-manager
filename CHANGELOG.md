@@ -1,3 +1,7 @@
+# 0.4.6 — 2026-11-25
+
+- Point the homepage and description links to https://mjms.fr/applications/mjms-pdf-manager.
+
 # 0.4.5 — 2026-11-25
 
 - Point the App Store homepage and description links to https://mjms.fr/applications.
